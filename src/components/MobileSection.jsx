@@ -12,11 +12,11 @@ function extractAltNumbers(data, original) {
   const found = new Set()
   const json = JSON.stringify(data)
   
-  // Search for 12-digit numbers starting with 91 (country code + 10 digit)
+  // Search for 12-digit numbers starting with 91 (91 + 10-digit)
   const matches12 = json.match(/91[6-9]\d{8}/g)
   if (matches12) {
     matches12.forEach(m => {
-      // Remove the "91" prefix and keep the last 10 digits
+      // Remove the "91" prefix (first 2 digits) and keep the last 10 digits
       const tenDigit = m.substring(2)
       if (tenDigit !== original && /^[6-9]\d{9}$/.test(tenDigit)) {
         found.add(tenDigit)
