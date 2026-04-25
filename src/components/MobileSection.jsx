@@ -12,20 +12,26 @@ function extractAltNumbers(data, original) {
   const found = new Set()
   const json = JSON.stringify(data)
   
-  // Search for 12-digit numbers starting with 91
-  const matches12 = json.match(/\b91[6-9]\d{8}\b/g)
+  // Search for 12-digit numbers starting with 91 (country code + 10 digit)
+  const matches12 = json.match(/91[6-9]\d{8}/g)
   if (matches12) {
     matches12.forEach(m => {
       // Remove the "91" prefix and keep the last 10 digits
       const tenDigit = m.substring(2)
-      if (tenDigit !== original) found.add(tenDigit)
+      if (tenDigit !== original && /^[6-9]\d{9}$/.test(tenDigit)) {
+        found.add(tenDigit)
+      }
     })
   }
   
   // Search for 10-digit numbers starting with 6-9
-  const matches10 = json.match(/\b[6-9]\d{9}\b/g)
+  const matches10 = json.match(/[6-9]\d{9}/g)
   if (matches10) {
-    matches10.forEach(m => { if (m !== original) found.add(m) })
+    matches10.forEach(m => { 
+      if (m !== original && /^[6-9]\d{9}$/.test(m)) {
+        found.add(m)
+      }
+    })
   }
   
   return [...found]
@@ -64,24 +70,38 @@ export default function MobileSection() {
     const visited = new Set()
     const queue = [mobile]
     const allResults = []
+    const processedNumbers = new Set()
 
     try {
       while (queue.length > 0) {
         const current = queue.shift()
+        
+        // Skip if already visited
         if (visited.has(current)) continue
         visited.add(current)
 
+        // Add to loop log with searching status
         setLoopLog(prev => [...prev, { number: current, status: 'searching' }])
 
+        // Fetch the number
         const data = await fetchMobile(current)
         const entry = { number: current, data }
         allResults.push(entry)
         setDeepResults([...allResults])
 
+        // Mark as done in loop log
         setLoopLog(prev => prev.map(l => l.number === current ? { ...l, status: 'done' } : l))
 
+        // Extract all alternate numbers from response
         const altNums = extractAltNumbers(data, current)
-        altNums.forEach(n => { if (!visited.has(n)) queue.push(n) })
+        
+        // Add new unique alt numbers to queue
+        altNums.forEach(n => { 
+          if (!visited.has(n) && !queue.includes(n)) {
+            queue.push(n)
+            processedNumbers.add(n)
+          }
+        })
       }
     } catch (e) { setError(e.message) }
     finally { setLoading(false) }
