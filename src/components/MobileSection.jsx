@@ -13,7 +13,7 @@ function extractAltNumbers(data, original) {
   const json = JSON.stringify(data)
   
   // Search for 12-digit numbers starting with 91 (91 + 10-digit)
-  const matches12 = json.match(/91[6-9]\d{8}/g)
+  const matches12 = json.match(/\b91[6-9]\d{9}\b/g)
   if (matches12) {
     matches12.forEach(m => {
       // Remove the "91" prefix (first 2 digits) and keep the last 10 digits
@@ -25,7 +25,7 @@ function extractAltNumbers(data, original) {
   }
   
   // Search for 10-digit numbers starting with 6-9
-  const matches10 = json.match(/[6-9]\d{9}/g)
+  const matches10 = json.match(/\b[6-9]\d{9}\b/g)
   if (matches10) {
     matches10.forEach(m => { 
       if (m !== original && /^[6-9]\d{9}$/.test(m)) {
