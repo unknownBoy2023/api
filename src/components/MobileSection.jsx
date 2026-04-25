@@ -11,10 +11,23 @@ const API_KEY = '%26key%3Dtg'
 function extractAltNumbers(data, original) {
   const found = new Set()
   const json = JSON.stringify(data)
-  const matches = json.match(/\b[6-9]\d{9}\b/g)
-  if (matches) {
-    matches.forEach(m => { if (m !== original) found.add(m) })
+  
+  // Search for 12-digit numbers starting with 91
+  const matches12 = json.match(/\b91[6-9]\d{8}\b/g)
+  if (matches12) {
+    matches12.forEach(m => {
+      // Remove the "91" prefix and keep the last 10 digits
+      const tenDigit = m.substring(2)
+      if (tenDigit !== original) found.add(tenDigit)
+    })
   }
+  
+  // Search for 10-digit numbers starting with 6-9
+  const matches10 = json.match(/\b[6-9]\d{9}\b/g)
+  if (matches10) {
+    matches10.forEach(m => { if (m !== original) found.add(m) })
+  }
+  
   return [...found]
 }
 
