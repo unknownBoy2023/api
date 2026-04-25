@@ -1,0 +1,23 @@
+{
+  "name": "sdf-deep-search",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.0",
+    "vite": "^8.0.10"
+  },
+  "dependencies": {
+    "framer-motion": "^12.38.0",
+    "html2pdf.js": "^0.14.0",
+    "jspdf": "^4.2.1",
+    "lucide-react": "^0.511.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  }
+}
